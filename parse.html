@@ -1,0 +1,93 @@
+<html>
+<script type="text/javascript">
+window.onload = function() {
+function readSingleFile(event) {
+let file = event.target.files[0];
+if (!file) {
+return;
+}
+var reader = new FileReader();
+reader.onload = function(event) {
+let content = event.target.result;
+displayContent(content);
+};
+reader.readAsText(file, 'windows-1251');
+}
+
+function displayContent(contents) {
+let element = document.getElementById('data');
+element.innerHTML = contents;
+createArray();
+}
+
+function createArray() {
+let arr = [];
+let table = document.getElementsByClassName("xl9117826")[0];
+let count = 0;
+for (var i = 0 ; i < table.rows.length; i++) {
+//for (var i = 0 ; i < 20; i++) {
+append = 0;
+for (var j = 0; j < table.rows[i].cells.length; j++) {
+if (table.rows[i].className != "xl10617826") break;
+
+if (table.rows[i].cells[j].innerHTML != '&nbsp;') {
+if (append == 0) arr.push([j]);
+if (table.rows[i].cells[j].innerText != "") {
+let line = table.rows[i].cells[j].innerText.replace("\"", "").replace(String.fromCharCode(160), "").split(String.fromCharCode(160));
+for (k = 0; k < line.length; k++) {
+let str = line[k];
+if (str[0] == " ") str = str.substr(1);
+if (str != "") arr[arr.length - 1].push(str);
+}
+}
+append = 1;
+}
+}
+}
+
+navigator.clipboard.writeText(JSON.stringify(arr));
+let element = document.getElementById('data');
+element.innerHTML = "Массив JSON скопирован в буфер. Теперь просто вставь его в обычный .txt файл (Ctrl+V) и сохрани его. Потом открой этот файл с помощью скрипта на Python.";
+
+}
+
+document.getElementById('file-input')
+.addEventListener('change', readSingleFile, false);
+
+}
+</script>
+
+<style type="text/css">
+.all_in_all {
+width: 100%;
+height: 100vh;
+display: flex;
+justify-content: center;
+align-items: center;
+flex-direction: column;
+}
+
+.button {
+-moz-border-radius: 50px;
+-webkit-border-radius: 50px; 
+-khtml-border-radius:50px; 
+border-radius: 50px;
+background-color: #007d3a;
+color: #FFFFFF;
+font-family: sans-serif;
+padding: 20px;
+}
+
+#data {
+font-family: sans-serif;
+}
+</style>
+
+<body>
+<div class="all_in_all">
+<label for="file-input" class="button">Выбери файл</label>
+<input type="file" id="file-input" style="visibility:hidden;">
+<div id="data"></div>
+</div>
+</body>
+</html>

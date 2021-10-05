@@ -27,11 +27,18 @@ let count = 0;
 for (var i = 0 ; i < table.rows.length; i++) {
 //for (var i = 0 ; i < 20; i++) {
 append = 0;
-for (var j = 0; j < table.rows[i].cells.length; j++) {
+for (var j = 0; j < table.rows[i].cells.length - 2; j++) {
 if (table.rows[i].className != "xl10617826") break;
 
 if (table.rows[i].cells[j].innerHTML != '&nbsp;') {
-if (append == 0) arr.push([j]);
+if (append == 0 && table.rows[i].cells[j].rowSpan == "2") arr.push([j]);
+if (append == 0 && table.rows[i].cells[j].rowSpan != "2") {
+if (j != 0) {
+arr.push([j-1]);
+arr[arr.length - 1].push("-");
+}
+else arr.push([j]);
+}
 if (table.rows[i].cells[j].innerText != "") {
 let line = table.rows[i].cells[j].innerText.replace("\"", "").replace(String.fromCharCode(160), "").split(String.fromCharCode(160));
 for (k = 0; k < line.length; k++) {

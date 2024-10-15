@@ -1,100 +1,199 @@
+<!DOCTYPE html>
 <html>
 <script type="text/javascript">
-window.onload = function() {
-function readSingleFile(event) {
-let file = event.target.files[0];
-if (!file) {
-return;
-}
-var reader = new FileReader();
-reader.onload = function(event) {
-let content = event.target.result;
-displayContent(content);
+window.onload = function () {
+	function readSingleFile(event) {
+		let file = event.target.files[0];
+		if (!file) {
+			return;
+		}
+		var reader = new FileReader();
+		reader.onload = function (event) {
+			let content = event.target.result;
+			displayContent(content);
+		};
+		reader.readAsText(file, 'windows-1251');
+	}
+
+	function displayContent(contents) {
+		let element = document.getElementById('data');
+		element.innerHTML = contents;
+
+		// Check which radio button is selected
+		let selectedFunction = document.querySelector(
+		                           'input[name="functionChoice"]:checked'
+		                       ).value;
+
+		// Call the selected function
+		if (selectedFunction === 'build17') {
+			createArrayBuild17();
+		} else if (selectedFunction === 'build17Oriented') {
+			createArrayBuild17Oriented();
+		}
+	}
+
+	function isFirstCharacterEnglishLetter(text) {
+		const regex = /^[A-Za-z]/;
+		return regex.test(text.trim());
+	}
+
+	function createArrayBuild17() {
+		let arr = [];
+		let table = document.getElementsByClassName('xl9117826')[0];
+		let count = 0;
+		for (var i = 0; i < table.rows.length; i++) {
+			append = 0;
+			for (var j = 0; j < table.rows[i].cells.length - 2; j++) {
+				if (table.rows[i].className != 'xl10617826') break;
+
+				if (table.rows[i].cells[j].innerHTML != '&nbsp;') {
+					if (append == 0 && table.rows[i].cells[j].rowSpan == '2')
+						arr.push([j]);
+					if (append == 0 && table.rows[i].cells[j].rowSpan != '2') {
+						if (j != 0) {
+							arr.push([j - 1]);
+							arr[arr.length - 1].push('-');
+						} else arr.push([j]);
+					}
+					if (table.rows[i].cells[j].innerText != '') {
+						let line = table.rows[i].cells[j].innerText
+						           .replace('"', '')
+						           .replace(String.fromCharCode(160), '')
+						           .split(String.fromCharCode(160));
+						for (k = 0; k < line.length; k++) {
+							let str = line[k];
+							if (str[0] == ' ') str = str.substr(1);
+							if (str != '') arr[arr.length - 1].push(str);
+						}
+					}
+					append = 1;
+				}
+			}
+		}
+		navigator.clipboard.writeText(JSON.stringify(arr));
+		let element = document.getElementById('data');
+		element.innerHTML = "The JSON array is copied to the clipboard. Now just paste it into a regular .txt file (Ctrl+V) and save it. Then open this file using the Python script.";
+	}
+
+	function createArrayBuild17Oriented() {
+		let arr = [];
+		let table = document.getElementsByClassName('xl9132247')[0];
+		let count = 0;
+		for (var i = 0; i < table.rows.length; i++) {
+			append = 0;
+			for (var j = 0; j < table.rows[i].cells.length - 2; j++) {
+				if (table.rows[i].className != 'xl10532247') break;
+
+				if (table.rows[i].cells[j].innerHTML != '&nbsp;') {
+					if (
+					    append == 0 &&
+					    isFirstCharacterEnglishLetter(table.rows[i].cells[j].innerText)
+					)
+						arr.push([j]);
+					if (
+					    append == 0 &&
+					    !isFirstCharacterEnglishLetter(
+					        table.rows[i].cells[j].innerText
+					    )
+					) {
+						arr.push([j - 1]);
+						arr[arr.length - 1].push('-');
+					}
+					if (table.rows[i].cells[j].innerText != '') {
+						let line = table.rows[i].cells[j].innerText
+						           .replace('"', '')
+						           .replace(String.fromCharCode(160), '')
+						           .split(String.fromCharCode(160));
+						for (k = 0; k < line.length; k++) {
+							let str = line[k];
+							if (str[0] == ' ') str = str.substr(1);
+							if (str != '') arr[arr.length - 1].push(str);
+						}
+					}
+					append = 1;
+				}
+			}
+		}
+
+		navigator.clipboard.writeText(JSON.stringify(arr));
+		let element = document.getElementById('data');
+		element.innerHTML =
+		    'The JSON array is copied to the clipboard. Now just paste it into a regular .txt file (Ctrl+V) and save it. Then open this file using the Python script.';
+	}
+
+	// Add event listener to the file input
+	document
+	.getElementById('file-input')
+	.addEventListener('change', readSingleFile, false);
 };
-reader.readAsText(file, 'windows-1251');
-}
-
-function displayContent(contents) {
-let element = document.getElementById('data');
-element.innerHTML = contents;
-createArray();
-}
-
-function createArray() {
-let arr = [];
-let table = document.getElementsByClassName("xl9117826")[0];
-let count = 0;
-for (var i = 0 ; i < table.rows.length; i++) {
-//for (var i = 0 ; i < 20; i++) {
-append = 0;
-for (var j = 0; j < table.rows[i].cells.length - 2; j++) {
-if (table.rows[i].className != "xl10617826") break;
-
-if (table.rows[i].cells[j].innerHTML != '&nbsp;') {
-if (append == 0 && table.rows[i].cells[j].rowSpan == "2") arr.push([j]);
-if (append == 0 && table.rows[i].cells[j].rowSpan != "2") {
-if (j != 0) {
-arr.push([j-1]);
-arr[arr.length - 1].push("-");
-}
-else arr.push([j]);
-}
-if (table.rows[i].cells[j].innerText != "") {
-let line = table.rows[i].cells[j].innerText.replace("\"", "").replace(String.fromCharCode(160), "").split(String.fromCharCode(160));
-for (k = 0; k < line.length; k++) {
-let str = line[k];
-if (str[0] == " ") str = str.substr(1);
-if (str != "") arr[arr.length - 1].push(str);
-}
-}
-append = 1;
-}
-}
-}
-
-navigator.clipboard.writeText(JSON.stringify(arr));
-let element = document.getElementById('data');
-element.innerHTML = "Массив JSON скопирован в буфер. Теперь просто вставь его в обычный .txt файл (Ctrl+V) и сохрани его. Потом открой этот файл с помощью скрипта на Python.";
-
-}
-
-document.getElementById('file-input')
-.addEventListener('change', readSingleFile, false);
-
-}
 </script>
 
 <style type="text/css">
 .all_in_all {
-width: 100%;
-height: 100vh;
-display: flex;
-justify-content: center;
-align-items: center;
-flex-direction: column;
+	width: 100%;
+	height: 100vh;
+display:
+	flex;
+justify-content:
+	center;
+align-items:
+	center;
+flex-direction:
+	column;
 }
 
 .button {
--moz-border-radius: 50px;
--webkit-border-radius: 50px; 
--khtml-border-radius:50px; 
-border-radius: 50px;
-background-color: #007d3a;
-color: #FFFFFF;
-font-family: sans-serif;
-padding: 20px;
+	-moz-border-radius: 50px;
+	-webkit-border-radius: 50px;
+	-khtml-border-radius: 50px;
+	border-radius: 50px;
+background-color:
+#007d3a;
+color:
+#ffffff;
+font-family:
+	sans-serif;
+	padding: 20px;
 }
 
 #data {
-font-family: sans-serif;
+font-family:
+sans-serif;
+}
+
+.radio-group {
+	margin-bottom: 20px;
+}
+
+.radio-group label {
+	margin-right: 10px;
+font-family:
+	sans-serif;
 }
 </style>
 
 <body>
 <div class="all_in_all">
-<label for="file-input" class="button">Выбери файл</label>
-<input type="file" id="file-input" style="visibility:hidden;">
-<div id="data"></div>
-</div>
-</body>
-</html>
+	           <!-- Radio buttons to choose the function -->
+	           <div class="radio-group">
+		                      <label>
+		                      <input type="radio" name="functionChoice" value="build17" checked />
+		                                  For Build17
+		                                  </label>
+		                                  <label>
+		                                  <input
+		                                  type="radio"
+		                                       name="functionChoice"
+		                                               value="build17Oriented"
+		                                                       />
+		                                                       For Build17 rCRS-oriented
+		                                                       </label>
+		                                                       </div>
+
+		                                                       <!-- File input and display content -->
+		                                                       <label for="file-input" class="button">Choose file</label>
+			                                                               <input type="file" id="file-input" style="visibility: hidden" />
+			                                                                       <div id="data"></div>
+			                                                                               </div>
+			                                                                               </body>
+			                                                                               </html>
